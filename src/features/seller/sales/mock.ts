@@ -35,6 +35,7 @@ export const MOCK_ORDERS: Order[] = [
         couponCode: null,
         notes: null,
         paidAt: '2024-03-15T14:00:00Z',
+        branch: null,
         envio: { direccion: 'Av. Siempre Viva 123, Lima', carrier: 'Olva Courier', tracking: 'TRK-123456789', costo: 15.00, city: 'Lima', postalCode: '15001', notes: '' },
         items: [
             { id: '1', storeId: 1, isOwn: true, name: 'Producto A', qty: 2, price: 100.00, lineTotal: 200.00, shippingCost: 0, status: 'confirmed', can_confirm: false, can_cancel: false },
@@ -76,6 +77,7 @@ export const MOCK_ORDERS: Order[] = [
         couponCode: null,
         notes: 'Prefiero atención en la mañana',
         paidAt: '2024-03-16T09:30:00Z',
+        branch: null,
         envio: { direccion: 'Calle Falsa 456, Arequipa', carrier: 'Shalom', tracking: 'SHL-987654321', costo: 10.00, city: 'Arequipa', postalCode: '04001', notes: 'Dejar en portería' },
         items: [],
         serviceItems: [
@@ -95,7 +97,8 @@ export const MOCK_ORDERS: Order[] = [
                 endTime: '11:00:00',
                 modality: 'presencial',
                 durationMinutes: 60,
-                serviceBookingId: 'bk-001'
+                serviceBookingId: 'bk-001',
+                bookingStatus: 'pending'
             }
         ]
     },
@@ -133,6 +136,7 @@ export const MOCK_ORDERS: Order[] = [
         couponCode: null,
         notes: null,
         paidAt: null,
+        branch: null,
         envio: { direccion: 'Urb. Los Rosales Mz A Lt 5, Trujillo', carrier: 'Shalom', tracking: 'SHL-9876543456', costo: 20.00, city: 'Trujillo', postalCode: '13001', notes: '' },
         items: [
             { id: '4', storeId: 1, isOwn: true, name: 'Producto D', qty: 5, price: 90.00, lineTotal: 450.00, shippingCost: 0, status: 'pending_seller', can_confirm: true, can_cancel: true }
@@ -154,7 +158,8 @@ export const MOCK_ORDERS: Order[] = [
                 endTime: null,
                 modality: 'domicilio',
                 durationMinutes: 45,
-                serviceBookingId: 'bk-002'
+                serviceBookingId: 'bk-002',
+                bookingStatus: 'pending'
             }
         ]
     }
