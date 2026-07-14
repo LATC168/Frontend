@@ -1,0 +1,36 @@
+/* Admin Lyrium — variables alineadas al design system global */
+:root {
+    --admin-accent:      var(--brand-teal);
+    --admin-success:     var(--color-success);
+    --admin-danger:      var(--color-error);
+    --admin-warning:     var(--color-warning);
+    --admin-text:        var(--text-primary);
+    --admin-text-light:  var(--text-secondary);
+    --admin-bg:          var(--bg-secondary);
+    --admin-card:        var(--bg-card);
+    --admin-border:      var(--border-subtle);
+    --admin-muted:       var(--bg-muted);
+}
+
+/* Scroll sin scrollbar en panel vendedores */
+#vendedoresPanel {
+    padding: 10px 0;
+    overflow-y: auto;
+    min-height: calc(100vh - 130px);
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+#vendedoresPanel::-webkit-scrollbar { display: none; }
+
+#paymentNotifContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 16px;
+}
+
+/* Entrada de notificación */
+@keyframes pnSlideIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
