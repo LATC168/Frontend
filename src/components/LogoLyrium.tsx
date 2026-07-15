@@ -282,19 +282,30 @@ const STYLES = `
   }
   .lyr-side-img {
     max-height: 60px; width: auto; object-fit: contain;
-    filter: drop-shadow(0 4px 8px rgba(0,0,0,0.1));
     transform-origin: center center;
-    will-change: transform, filter;
+    will-change: transform;
     display: block;
     padding: 4px 6px;
   }
   @media(min-width:768px){ .lyr-side-img { max-height: 80px; } }
+
+  /* ── Barrido de brillo puntual en hover (luz, no sombra) ── */
+  .lyr-hover-shine {
+    position: absolute;
+    top: -10%; left: -30%;
+    width: 28%; height: 120%;
+    background: linear-gradient(to right, transparent 0%, rgba(255,255,255,0.65) 50%, transparent 100%);
+    transform: rotate(18deg);
+    pointer-events: none;
+    opacity: 0;
+  }
 
   /* ── Glow ring ── */
   .lyr-glow-ring {
     position: absolute; inset: -8px;
     border-radius: 12px;
     border: 2px solid rgba(163,230,53,0);
+    opacity: 0;
     pointer-events: none;
   }
 
@@ -495,11 +506,11 @@ export default function LogoLyrium({
     };
     scene.addEventListener('mouseenter', handleSceneEnter);
 
-    // ── Hover ola fluida en imagen lateral ──
-    let waveRunning = false;
-    const handleSideEnter = (): void => {
-      if (!hasSide || waveRunning) return;
-      waveRunning = true;
+    // ── 5 animaciones de hover en bucle para las letras (solo transform/ring, cero sombras) ──
+    let hoverBusy = false;
+    let hoverAnimIndex = 0;
+
+    const hoverWave = (): void => {
       anime({
         targets: sideImage,
         keyframes: [
@@ -508,18 +519,75 @@ export default function LogoLyrium({
           { translateY: -3,  rotate: -1,   scaleX: 1.01, scaleY: 0.98, duration: 180, easing: 'easeInOutSine' },
           { translateY:  0,  rotate:  0,   scaleX: 1,    scaleY: 1,    duration: 280, easing: 'easeOutElastic(1, 0.5)' },
         ],
-        complete: () => { waveRunning = false; },
+      });
+    };
+
+    const hoverTilt = (): void => {
+      anime({
+        targets: sideImage,
+        keyframes: [
+          { perspective: [400, 400], rotateX: 6,  rotateY: -8, scale: 1.03,  duration: 240, easing: 'easeOutSine' },
+          { perspective: [400, 400], rotateX: -3, rotateY: 5,  scale: 1.015, duration: 240, easing: 'easeInOutSine' },
+          { perspective: [400, 400], rotateX: 0,  rotateY: 0,  scale: 1,     duration: 300, easing: 'easeOutElastic(1, 0.6)' },
+        ],
+      });
+    };
+
+    const hoverPulse = (): void => {
+      anime({
+        targets: sideImage,
+        scale: [1, 1.07, 0.98, 1.03, 1],
+        duration: 700,
+        easing: 'easeInOutSine',
+      });
+      anime({
+        targets: sideGlowRing,
+        keyframes: [
+          { opacity: 0.55, scale: 1.15, borderColor: 'rgba(250,204,21,0.85)', duration: 350, easing: 'easeOutSine' },
+          { opacity: 0,    scale: 0.9,  borderColor: 'rgba(250,204,21,0)',    duration: 350, easing: 'easeInSine' },
+        ],
+      });
+    };
+
+    const hoverBounce = (): void => {
+      anime({
+        targets: sideImage,
+        translateY: [0, -8, 0],
+        scaleY: [1, 0.93, 1.04, 1],
+        scaleX: [1, 1.04, 0.98, 1],
+        duration: 620,
+        easing: 'easeOutElastic(1, 0.5)',
+      });
+    };
+
+    const hoverFlash = (): void => {
+      const shine = document.createElement('div');
+      shine.className = 'lyr-hover-shine';
+      sideContainer!.appendChild(shine);
+      anime({
+        targets: shine,
+        left: ['-30%', '115%'],
+        opacity: [0, 1, 0],
+        duration: 560,
+        easing: 'easeInOutSine',
+        complete: () => shine.remove(),
       });
       anime({
         targets: sideImage,
-        filter: [
-          'drop-shadow(0 4px 8px rgba(0,0,0,0.1))',
-          'drop-shadow(0 10px 22px rgba(163,230,53,0.55))',
-          'drop-shadow(0 4px 8px rgba(0,0,0,0.1))',
-        ],
-        duration: 920,
-        easing: 'easeInOutSine',
+        scale: [1, 1.045, 1],
+        duration: 480,
+        easing: 'easeOutSine',
       });
+    };
+
+    const hoverAnimations = [hoverWave, hoverTilt, hoverPulse, hoverBounce, hoverFlash];
+
+    const handleSideEnter = (): void => {
+      if (!hasSide || hoverBusy) return;
+      hoverBusy = true;
+      hoverAnimations[hoverAnimIndex % hoverAnimations.length]();
+      hoverAnimIndex++;
+      setTimeout(() => { hoverBusy = false; }, 950);
     };
     if (hasSide) sideContainer!.addEventListener('mouseenter', handleSideEnter);
 
@@ -559,8 +627,22 @@ const moodInterval = setInterval(() => {
           setTimeout(() => spawnSparks(20), 120);
         },
       }, 1050)
-      .add({ targets: hasSide ? sideContainer : [], opacity: [0, 1], translateY: [-32, 0], duration: 380, easing: 'easeOutBack(2.2)' }, 3620)
-      .add({ targets: hasSide ? sideImage : [],     scaleY: [0.75, 1.06, 1], scaleX: [1.18, 0.97, 1], opacity: [0, 1], duration: 360, easing: 'easeOutBack(1.6)' }, 3620)
+      .add({ targets: hasSide ? sideContainer : [], opacity: [0, 1], translateY: [-10, 0], duration: 420, easing: 'easeOutSine' }, 3620)
+      .add({ targets: hasSide ? sideImage : [], clipPath: ['inset(0 100% 0 0)', 'inset(0 0% 0 0)'], duration: 650, easing: 'easeInOutSine' }, 3620)
+      .add({
+        targets: hasSide ? sideGlowRing : [],
+        keyframes: [
+          { opacity: 0.6, scale: 1.08, borderColor: 'rgba(163,230,53,0.85)', duration: 350, easing: 'easeOutSine' },
+          { opacity: 0,   scale: 1,    borderColor: 'rgba(163,230,53,0)',    duration: 350, easing: 'easeInSine' },
+        ],
+      }, 3620)
+      .add({
+        targets: hasSide ? sideImage : [],
+        keyframes: [
+          { scaleY: 1.05, scaleX: 0.98, duration: 150, easing: 'easeOutSine' },
+          { scaleY: 1,    scaleX: 1,    duration: 150, easing: 'easeInOutSine' },
+        ],
+      }, 4270)
       .add({
         targets: card, rotateY: [180, 360], duration: 650, easing: 'easeInOutBack',
         begin: () => spawnSparks(24),
