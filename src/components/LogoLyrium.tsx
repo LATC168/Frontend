@@ -263,7 +263,7 @@ const STYLES = `
     background: linear-gradient(135deg, #a3e635 0%, #0ea5e9 100%);
     box-shadow: 0 8px 30px rgba(0,0,0,0.5);
   }
-  .lyr-front-img { width: 110%; height: 131%; object-fit: cover; }
+  .lyr-front-img { width: 110%; height: 133%; object-fit: cover; }
 
   /* ── Imagen lateral ── */
   .lyr-side-container::after {
